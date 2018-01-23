@@ -5,16 +5,18 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
+//ahooh
 
 namespace testerC
 {
     public class SenderBroadcast
     {
         private const int port1 = 6974;
+        UdpClient client = new UdpClient();
+        
+        IPEndPoint ip = new IPEndPoint(IPAddress.Broadcast, port1);
         public void SendBroadcast() {
-            UdpClient client = new UdpClient();
             client.EnableBroadcast = true;
-            IPEndPoint ip = new IPEndPoint(IPAddress.Broadcast, port1);
             byte[] bytes = Encoding.ASCII.GetBytes("hello");
             client.Send(bytes, bytes.Length, ip);
 
