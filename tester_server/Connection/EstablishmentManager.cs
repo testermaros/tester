@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace tester_server.Connection
 {
-    public class Establishment_manager
+    public class EstablishmentManager
     {
         private const int TCP_PORT = 8619;
         private const int UDP_PORT = 6974;
-        public Establishment_manager(int port)
-        {
-
-        }
         /// <summary>
         /// Spustenie UDP servera. Neblokujuca verzia
         /// Bezi na vlastnom vlakne
@@ -32,12 +30,17 @@ namespace tester_server.Connection
         /// </summary>
         private void Run()
         {
-            while (true)
-            {
+            var Server = new UdpClient(UDP_PORT);
+            var ResponseData = Encoding.ASCII.GetBytes("Hello world");
 
+            while (true){
+                var ClientEp = new IPEndPoint(IPAddress.Any, 0);
+                var ClientRequestData = Server.Receive(ref ClientEp);
+                var ClientRequest = Encoding.ASCII.GetString(ClientRequestData);
 
+                Console.WriteLine("Recived {0} from {1}, sending response", ClientRequest, ClientEp.Address.ToString());
+                Server.Send(ResponseData, ResponseData.Length, ClientEp);
             }
         }
-
     }
 }
