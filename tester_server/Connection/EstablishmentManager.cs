@@ -11,7 +11,6 @@ namespace tester_server.Connection
 {
     public class EstablishmentManager
     {
-        private const int TCP_PORT = 8619;
         private const int UDP_PORT = 6974;
         /// <summary>
         /// Spustenie UDP servera. Neblokujuca verzia

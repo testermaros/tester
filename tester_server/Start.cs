@@ -17,6 +17,7 @@ namespace tester_server
         private Socket listener;
         private string state;
         private bool running_flag;
+        private const int TCP_PORT = 8619;
 
         // spracovanie dat po akceptovani pripojenia
         private ClientManager mannager;
@@ -27,7 +28,7 @@ namespace tester_server
             block_server_threads = new ManualResetEvent(true);
         }
         /// <summary>
-        /// Vytvorenie servera
+        /// Vytvorenie servera na zadanom porte
         /// </summary>
         /// <param name="allowed_host"> Maximalny pocet uzivatelov</param>
         public void Create_Server(int allowed_host)
@@ -35,7 +36,7 @@ namespace tester_server
             //ziskanie udajov
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[3];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 8888);
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, TCP_PORT);
             //vytvorenie servera
             listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             listener.Bind(localEndPoint);

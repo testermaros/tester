@@ -19,6 +19,17 @@ namespace tester_server.Connection
         //ak nie je pripojeny ziadny uzivatel vypne sa
         private bool thread_status;
 
+
+        public ClientManager()
+        {
+            connected_users = new ConcurrentDictionary<string, Socket>();
+        }
+
+        void AddClient(Socket client_socket)
+        {
+
+        }
+
         public void Start()
         {
             lock (lock_thread_status)
@@ -34,7 +45,7 @@ namespace tester_server.Connection
         /// Citanie prichadzajucej komunikacie
         /// Ak je socket zatvoreny komunikacia bude ukoncena a odkaz na socket vymazany
         /// </summary>
-        void Run()
+       /* void Run()
         {
             while (true)
             {
@@ -63,38 +74,6 @@ namespace tester_server.Connection
                     }
                 }
             }
-        }
-
-        // ziskanie ip theSocketConnected.RemoteEndPoint.ToString();
-
-        private int Send(Socket client, Message message)
-        {
-            if (!Test(client))
-            {
-                Console.Error.WriteLine("Test Failed");
-                return 1;
-            }
-            try
-            {
-                string string_message = message.string_message;
-                client.Send(Encoding.ASCII.GetBytes(string_message));
-            }
-            catch (ArgumentNullException e)
-            {
-                Console.Error.WriteLine(e.Message);
-                return 3;
-            }
-            catch (SocketException e)
-            {
-                Console.Error.WriteLine(e.Message);
-                return 4;
-            }
-            catch (ObjectDisposedException e)
-            {
-                Console.Error.WriteLine(e.Message);
-                return 5;
-            }
-            return 0;
-        }
+        }*/
     }
 }
