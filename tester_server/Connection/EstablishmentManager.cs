@@ -29,11 +29,12 @@ namespace tester_server.Connection
         /// </summary>
         private void Run()
         {
-            var Server = new UdpClient(UDP_PORT);
+            var Server = new UdpClient(8888);
             var ResponseData = Encoding.ASCII.GetBytes("Hello world");
 
             while (true){
                 var ClientEp = new IPEndPoint(IPAddress.Any, 0);
+                Console.WriteLine();
                 var ClientRequestData = Server.Receive(ref ClientEp);
                 var ClientRequest = Encoding.ASCII.GetString(ClientRequestData);
 

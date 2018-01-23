@@ -37,7 +37,7 @@ namespace tester_server.Connection
                 if (!thread_status)
                 {
                     thread_status = true;
-                    new Thread(Run).Start();
+                    //new Thread(Run).Start();
                 }
             }
         }
