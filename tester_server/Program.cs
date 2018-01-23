@@ -13,22 +13,11 @@ namespace tester_server
     {
         static void Main(string[] args)
         {
-            /*  EstablishmentManager m = new EstablishmentManager();
+              EstablishmentManager m = new EstablishmentManager();
               m.Start();
               Console.ReadLine();
               Console.ReadLine();
-              Console.ReadLine();*/
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,ProtocolType.Udp);
-
-            IPAddress broadcast = IPAddress.Parse("192.168.1.255");
-
-            byte[] sendbuf = Encoding.ASCII.GetBytes("asdasdsa");
-            IPEndPoint ep = new IPEndPoint(broadcast, 11000);
-
-            s.SendTo(sendbuf, ep);
-
-            Console.WriteLine("Message sent to the broadcast address");
-            Console.ReadLine();
+              Console.ReadLine();
         }
     }
 }

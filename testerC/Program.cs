@@ -4,47 +4,28 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace testerC
 {
     class Program
     {
-        private const int listenPort = 11000;
-
-        private static void StartListener()
-        {
-            bool done = false;
-
-            UdpClient listener = new UdpClient(listenPort);
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, listenPort);
-
-            try
-            {
-                while (!done)
-                {
-                    Console.WriteLine("Waiting for broadcast");
-                    byte[] bytes = listener.Receive(ref groupEP);
-
-                    Console.WriteLine("Received broadcast from {0} :\n {1}\n",
-                    groupEP.ToString(),
-                    Encoding.ASCII.GetString(bytes, 0, bytes.Length));
-                }
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-            finally
-            {
-                listener.Close();
-            }
-        }
-
+    
         public static int Main()
         {
-            StartListener();
+            int GroupPort = 6974;
+            UdpClient udp = new UdpClient();
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Broadcast, GroupPort);
+            string str4 = "Is anyone out there?";
+            byte[] sendBytes4 = Encoding.ASCII.GetBytes(str4);
+            Thread.Sleep(1000);
+            udp.Send(sendBytes4, sendBytes4.Length, groupEP);
+            IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            byte[] receiveBytes = udp.Receive(ref groupEP);
+            string returnData = Encoding.ASCII.GetString(receiveBytes);
+            Console.WriteLine(returnData);
+            Console.ReadLine();
             Console.ReadLine();
 
             return 0;

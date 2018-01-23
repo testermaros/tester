@@ -29,17 +29,29 @@ namespace tester_server.Connection
         /// </summary>
         private void Run()
         {
-            var Server = new UdpClient(8888);
-            var ResponseData = Encoding.ASCII.GetBytes("Hello world");
+            UdpClient server = new UdpClient(UDP_PORT);
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 0);
 
-            while (true){
-                var ClientEp = new IPEndPoint(IPAddress.Any, 0);
-                Console.WriteLine();
-                var ClientRequestData = Server.Receive(ref ClientEp);
-                var ClientRequest = Encoding.ASCII.GetString(ClientRequestData);
+            try
+            {
+                while (true)
+                {
+                    Console.WriteLine("Waiting for broadcast");
+                    byte[] bytes = server.Receive(ref groupEP);
 
-                Console.WriteLine("Recived {0} from {1}, sending response", ClientRequest, ClientEp.Address.ToString());
-                Server.Send(ResponseData, ResponseData.Length, ClientEp);
+                    Console.WriteLine("Received broadcast from {0} :\n {1}\n",
+                    groupEP.ToString(),
+                    Encoding.ASCII.GetString(bytes, 0, bytes.Length));
+                    server.Send(bytes, bytes.Length, groupEP);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            finally
+            {
+                server.Close();
             }
         }
     }
