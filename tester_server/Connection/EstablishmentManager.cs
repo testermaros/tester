@@ -30,19 +30,20 @@ namespace tester_server.Connection
         private void Run()
         {
             UdpClient server = new UdpClient(UDP_PORT);
-            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, 0);
+            IPEndPoint client = new IPEndPoint(IPAddress.Any, 0);
 
             try
             {
                 while (true)
                 {
                     Console.WriteLine("Waiting for broadcast");
-                    byte[] bytes = server.Receive(ref groupEP);
+                    byte[] bytes = server.Receive(ref client);
 
                     Console.WriteLine("Received broadcast from {0} :\n {1}\n",
-                    groupEP.ToString(),
+                    client.ToString(),
                     Encoding.ASCII.GetString(bytes, 0, bytes.Length));
-                    server.Send(bytes, bytes.Length, groupEP);
+                    //odoslanie odpovede
+                    server.Send(bytes, bytes.Length, client);
                 }
             }
             catch (Exception e)

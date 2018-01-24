@@ -26,6 +26,20 @@ namespace tester_server
             running_flag = false;
             state = "TURNED_OFF";
             block_server_threads = new ManualResetEvent(true);
+            mannager = new ClientManager();
+        }
+
+        private static IPAddress GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip;
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
         /// <summary>
         /// Vytvorenie servera na zadanom porte
@@ -34,8 +48,7 @@ namespace tester_server
         public void Create_Server(int allowed_host)
         {
             //ziskanie udajov
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddress = ipHostInfo.AddressList[3];
+            IPAddress ipAddress = GetLocalIPAddress();
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, TCP_PORT);
             //vytvorenie servera
             listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -48,6 +61,7 @@ namespace tester_server
             if (state.Equals("RUNNING"))
             {
                 Console.Error.WriteLine("Error: action start, state: " + state);
+                return;
             }
             //server bezi
             if (state.Equals("SUSPENDED"))
@@ -96,21 +110,21 @@ namespace tester_server
             {
                 // cakanie na pripojenie
                 Console.WriteLine("Waiting for a connection...");
-                listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+                AcceptCallback(listener);
                 //uspanie v pripade uspania servera
                 block_server_threads.WaitOne();
             }
         }
 
 
-        public void AcceptCallback(IAsyncResult ar) // ar objekt typu socket
+        private void AcceptCallback(Socket server)
         {
-            Socket listener = (Socket)ar.AsyncState;
-            Socket connected_client = listener.EndAccept(ar);
+            Socket connected_client = server.Accept();
             //ziskanie IP adresy
             string ip = ((IPEndPoint)(connected_client.RemoteEndPoint)).Address.ToString();
             Console.WriteLine("Connection accepted, IP: " + ip);
             //dummy ak nie je vlakno spracuvavajuce vstup do uzivatela zapnute zapni ho inak ignoruj
+            mannager.AddClient(ip, connected_client);
             mannager.Start();
         }
     }

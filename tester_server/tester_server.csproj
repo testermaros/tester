@@ -52,6 +52,9 @@
     <None Include="App.config" />
     <None Include="Project2_client.zip" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Tester\Maker\" />
+    <Folder Include="Tester\Tools\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
