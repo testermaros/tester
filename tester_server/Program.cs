@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using tester_server.Connection;
 
@@ -37,7 +33,7 @@ namespace tester_server
             IPEndPoint ep = new IPEndPoint(IPAddress.Loopback, 8619);
             client.Connect(ep);
             Thread.Sleep(5000);
-            client.Close();*/
+            client.Close();*/            
             Thread.Sleep(5000);
             Console.WriteLine("Klient sa ukoncil\n");
             tcpclnt.Close();
