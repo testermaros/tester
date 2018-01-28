@@ -16,11 +16,12 @@ namespace tester_server
             /*EstablishmentManager udp_establishment = new EstablishmentManager();
             udp_establishment.Start();*/
             //spustenie tcp servera
-             Start start_sequence = new Start();
-             start_sequence.Create_Server(100);
-             start_sequence.Start_server();
-             new Thread(Do).Start();
-            Console.WriteLine();
+            /*Start start_sequence = new Start();
+            start_sequence.Create_Server(100);
+            start_sequence.Start_server();
+            new Thread(Do).Start();*/
+            ClientManager m = new ClientManager();
+            Console.WriteLine(m.parse("prva sprava\nje toto stale\r\t\n\r\t\ntoto je uz druha sprava"));
             Console.ReadLine();
             Console.ReadLine();
             Console.ReadLine();
@@ -31,7 +32,7 @@ namespace tester_server
             TcpClient tcpclnt = new TcpClient();
             Console.WriteLine("Connecting.....");
 
-            tcpclnt.Connect("192.168.1.155", 8619);
+            tcpclnt.Connect("192.168.1.153", 8619);
             /*Socket client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint ep = new IPEndPoint(IPAddress.Loopback, 8619);
             client.Connect(ep);

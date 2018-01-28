@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -11,25 +12,35 @@ namespace tester_server.Connection
         // databaza pripojenych uzivatelov podla ip:port
         private ConcurrentDictionary<string, Socket> connected_users;
         private ConcurrentDictionary<string, long> last_communication;
+        //ak su precitane byty aj za hranice konca spravy ulozia sa do pomocnej pamati
+        private ConcurrentDictionary<string, string> buffers;
+
         //objekt vylucuje mozne prepisanie statusu vlakna
         private object lock_thread_status = new object();
         // status vlakna spracuvavajuceho prijatie requestov
         //ak nie je pripojeny ziadny uzivatel vypne sa
         private bool thread_status;
+
         //timer kontrola kazdych 10 sekund. Ak nepride keep alive socket je odstraneny(neaktivny)
         System.Timers.Timer timeout_timer = null;
 
+        //ukoncovacia sekvencia
+        private const string EOM = "\r\t\n\r\t\n";
+        private const int MAX_MESSAGE_DELAY = 500;
+        private const int MAX_SIZE = 1024;
 
         public ClientManager()
         {
             connected_users = new ConcurrentDictionary<string, Socket>();
             last_communication = new ConcurrentDictionary<string, long>();
+            buffers = new ConcurrentDictionary<string, string>();
         }
 
         public void AddClient(string ip, Socket client_socket)
         {
             connected_users.TryAdd(ip, client_socket);
             last_communication.TryAdd(ip, CurrentMilliseconds());
+            buffers.TryAdd(ip, "");
         }
 
         public void RemoveClient(string ip)
@@ -37,6 +48,10 @@ namespace tester_server.Connection
             Socket removed;
             if(connected_users.TryRemove(ip, out removed))
                 removed.Close();
+            long temp;
+            last_communication.TryRemove(ip,out temp);
+            string temp_b;
+            buffers.TryRemove(ip, out temp_b);
         }
         /// <summary>
         /// Ukoncenie vlakien servera
@@ -82,7 +97,6 @@ namespace tester_server.Connection
                     {
                         thread_status = false;
                     }
-                    break;
                 }
                 // obsluha citania prichadzajucich sprav
                 foreach (var item in connected_users)
@@ -90,7 +104,7 @@ namespace tester_server.Connection
                     //je mozne citat data na vstupe
                     if (item.Value.Available > 0)
                     {
-                        new Thread(() => HandleIncommingCommunication(item.Key,item.Value) ).Start();
+                        HandleIncommingCommunication(item.Key, item.Value);
                     }
                 }
             }
@@ -115,6 +129,8 @@ namespace tester_server.Connection
         {
             try
             {
+                //pridanie ukoncovacich znakov
+                message = message + EOM;
                 client.Send(Encoding.ASCII.GetBytes(message));
             }
             catch (ArgumentNullException e)
@@ -134,20 +150,78 @@ namespace tester_server.Connection
             }
             return 0;
         }
-
+        /// <summary>
+        /// Rozdelenie sprav na zaklade ukoncovacich znakov.
+        /// Ak je precitana sprava nad ramec spravy, zvysok je ulozeny do buffera od zaciatku
+        /// </summary>
+        /// <param name="client">Client ktoremu bude sprava odoslana</param>
+        /// <returns></returns>
         private string Recieve(Socket client)
         {
-            StringBuilder builder = new StringBuilder("");
-            int size = 1024;
-            byte[] buffer = new byte[size];
-            while (client.Available > 0)
-            {
-                int recieved = client.Receive(buffer, size, SocketFlags.None);
-                builder.Append(Encoding.ASCII.GetString(buffer, 0, recieved));
+            string ip = ((IPEndPoint)(client.RemoteEndPoint)).Address.ToString();
+            //uloz do buildera predchadzajuce znaky
+            string saved_part = "";
+            buffers.TryGetValue(ip, out saved_part);
+            StringBuilder builder = new StringBuilder(saved_part);
+            string temp_message;
+            int new_message_index = 0;
+            long last_recieved_time = 0;
+            byte[] buffer = new byte[MAX_SIZE];
+            while (true) {
+                while (client.Available > 0)
+                {
+                    int recieved = client.Receive(buffer, 0, MAX_SIZE, SocketFlags.None);
+                    builder.Append(Encoding.ASCII.GetString(buffer, 0, recieved));
+                    temp_message = builder.ToString();
+                    //bola prijata cela sprava
+                    if (IsEntireMessageRecieved(temp_message, out new_message_index))
+                    {
+                        //vrat zvysok po konci spravy na zaciatok buffera
+                        string next_part = temp_message.Substring(new_message_index + EOM.Length);
+                        //uloz zvysok
+                        buffers.TryUpdate(ip, saved_part, next_part);
+                        //return poslednu prijatu spravu
+                        return temp_message.Substring(0, new_message_index);
+                    }
+                    //nastavenie poslednej doby vykonania requestu
+                    last_recieved_time = CurrentMilliseconds();
+                }
+                //ak nie je sprava dokoncena ale nie su ziadne prichadzajuce data cakaj stanovenu dobu 
+                //po uplynuti doby povazuj spravu za nedostupnu
+                if (CurrentMilliseconds() - last_recieved_time > MAX_MESSAGE_DELAY)
+                    return null;
             }
-            return builder.ToString();
         }
 
+        public string parse(string temp_message)
+        {
+            int new_message_index;
+            if (IsEntireMessageRecieved(temp_message, out new_message_index))
+            {
+                //vrat zvysok po konci spravy na zaciatok buffera
+                string next_part = temp_message.Substring(new_message_index + EOM.Length);
+                Console.WriteLine(next_part);
+                //return poslednu prijatu spravu
+                return temp_message.Substring(0, new_message_index);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Hladanie ukoncovacej sekvencie. 
+        /// </summary>
+        /// <param name="temp_buffer"></param>
+        /// <returns></returns>
+        private bool IsEntireMessageRecieved(string string_buffer, out int next_message_index)
+        {
+            return (next_message_index = string_buffer.IndexOf(EOM)) >= 0;
+        }
+
+        /// <summary>
+        /// Spracovanie prijatej spravy
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns>Vysledok spracovania</returns>
         private string ProccessMessage(string message)
         {
             
