@@ -10,7 +10,8 @@ namespace tester_server.Tester
     {
         public List<QuestionTemplate> questions { get; private set; }
         public int ID { get; private set; }
-        public TestTemplate(int ID)
+        public string name { get; private set; }
+        public TestTemplate(int ID, string name)
         {
             questions = new List<QuestionTemplate>();
             this.ID = ID;

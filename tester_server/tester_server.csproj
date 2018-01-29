@@ -46,11 +46,13 @@
     <Compile Include="Connection\Authentification\LoginManager.cs" />
     <Compile Include="Connection\ClientManager.cs" />
     <Compile Include="Connection\EstablishmentManager.cs" />
+    <Compile Include="Connection\Request.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Start.cs" />
     <Compile Include="Tester\QuestionTemplate.cs" />
     <Compile Include="Tester\ResultForm.cs" />
+    <Compile Include="Tester\TestManager.cs" />
     <Compile Include="Tester\TestTemplate.cs" />
     <Compile Include="Tester\Tools\TestParser.cs" />
   </ItemGroup>

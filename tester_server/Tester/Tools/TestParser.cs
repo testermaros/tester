@@ -10,7 +10,7 @@ namespace tester_server.Tester.Tools
     public class TestParser
     {
         /*
-        <test ID>
+        <test ID name>
         <user password_hash username>
         </user>
         <questions>
@@ -33,7 +33,8 @@ namespace tester_server.Tester.Tools
             {
                 XElement xml_tree = XElement.Parse(text);
                 int testID = Int32.Parse(xml_tree.Attribute("ID").Value);
-                TestTemplate temp = new TestTemplate(testID);
+                string test_name = xml_tree.Attribute("name").Value;
+                TestTemplate temp = new TestTemplate(testID, test_name);
                 //ziskanie username
                 var user_element = xml_tree.Element("user");
                 string password_hash = user_element.Attribute("password_hash").Value;

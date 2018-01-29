@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
+using System.Xml.Linq;
 using tester_server.Connection;
 
 namespace tester_server
@@ -16,8 +17,14 @@ namespace tester_server
             start_sequence.Create_Server(100);
             start_sequence.Start_server();
             new Thread(Do).Start();*/
-            ClientManager m = new ClientManager();
-            Console.WriteLine(m.parse("prva sprava\nje toto stale\r\t\n\r\t\ntoto je uz druha sprava"));
+            /*ClientManager m = new ClientManager();
+            Console.WriteLine(m.parse("prva sprava\nje toto stale\r\t\n\r\t\ntoto je uz druha sprava"));*/
+            string data = "<data> <string> erik</string> </data>";
+            XElement e = new XElement("El", data);
+            string s = e.ToString();
+            XElement r = XElement.Parse(s);
+            XElement v = XElement.Parse(r.Value);
+            Console.WriteLine((Request.REQUEST_TYPE)1);
             Console.ReadLine();
             Console.ReadLine();
             Console.ReadLine();
