@@ -16,6 +16,23 @@ namespace tester_server.Connection.Authentification
         public LoginManager()
         {
             accounts = new List<Account>();
+            LoginManager m = RetrieveFromFile();
+            //subor zatial neexistuje
+            if (m == null)
+            {
+                accounts = new List<Account>();
+                ip_map = new Dictionary<string, string>();
+            }
+            else
+            {
+                this.accounts = m.accounts;
+                this.ip_map = m.ip_map;
+            }
+        }
+
+        ~LoginManager()
+        {
+            StoreToFile();
         }
 
         private Account AccountByUsername(string username)
@@ -68,7 +85,10 @@ namespace tester_server.Connection.Authentification
 
         public bool IsLoggedIn(string username)
         {
-            return AccountByUsername(username).Is_LogedOn;
+            Account temp = AccountByUsername(username);
+            if (temp == null)
+                return false;
+            return temp.Is_LogedOn;
         }
 
         public bool LogIn(string username)
@@ -83,7 +103,9 @@ namespace tester_server.Connection.Authentification
 
         public void LogOut(string username)
         {
-            AccountByUsername(username).Is_LogedOn = false;
+            Account user = AccountByUsername(username);
+            if (user == null) return;
+            user.Is_LogedOn = false;
         }
 
         //serializacia udajov

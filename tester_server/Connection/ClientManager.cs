@@ -24,6 +24,9 @@ namespace tester_server.Connection
         //timer kontrola kazdych 10 sekund. Ak nepride keep alive socket je odstraneny(neaktivny)
         System.Timers.Timer timeout_timer = null;
 
+        //spracovanie poziadaviek
+        RequestHandler handler;
+
         //ukoncovacia sekvencia
         private const string EOM = "\r\t\n\r\t\n";
         private const int MAX_MESSAGE_DELAY = 500;
@@ -34,6 +37,7 @@ namespace tester_server.Connection
             connected_users = new ConcurrentDictionary<string, Socket>();
             last_communication = new ConcurrentDictionary<string, long>();
             buffers = new ConcurrentDictionary<string, string>();
+            handler = new RequestHandler(this);
         }
 
         public void AddClient(string ip, Socket client_socket)
@@ -118,7 +122,10 @@ namespace tester_server.Connection
             SetCommunicationTime(key, 0);
             string recieved_string = Recieve(value);
             //spracovanie poziadavky
-            string response = ProccessMessage(recieved_string);
+            string response = ProccessMessage(recieved_string, key);
+            //zahod poziadavku a ukonci obsluhu
+            if (response == null)
+                return;
             //odoslanie odpovede
             SendResponse(response, value);
             // update poslednej komunikacie / zmena z komunikacie
@@ -222,10 +229,12 @@ namespace tester_server.Connection
         /// </summary>
         /// <param name="message"></param>
         /// <returns>Vysledok spracovania</returns>
-        private string ProccessMessage(string message)
+        private string ProccessMessage(string message, string key)
         {
-            
-            return null;
+            Response resp = handler.ProcessRequest(message, key);
+            if (resp == null)
+                return null;
+            return resp.ConvertToString();
         }
 
         private void SendResponse(string response, Socket client)
@@ -238,7 +247,7 @@ namespace tester_server.Connection
             return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
-        private void UpdateLastCommunicationTime(string key)
+        public void UpdateLastCommunicationTime(string key)
         {
             SetCommunicationTime(key, CurrentMilliseconds());
         }

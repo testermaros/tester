@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace tester_server.Connection.Authentification
 {
-    class Account
+    public class Account
     {
         public string user_name { get; set; }
         public int password_hash { get; set; }

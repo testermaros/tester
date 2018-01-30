@@ -6,10 +6,21 @@ using System.Threading.Tasks;
 
 namespace tester_server.Tester
 {
+    //len jedna mozna instancia triedy
     class TestManager
     {
+        //jedina mozna instancia triedy
+        private static TestManager manager = new TestManager();
+       
+        //zoznam pouzitelnych tetov
         public List<TestTemplate> available_tests { get; private set; }
-        public TestManager()
+
+        public static TestManager Instance()
+        {
+            return manager;
+        }
+
+        private TestManager()
         {
             available_tests = new List<TestTemplate>();
         }
@@ -27,7 +38,13 @@ namespace tester_server.Tester
 
         public string GetTestsNames()
         {
-            return (from test in available_tests select (test.ID + "." + test.name)).ToString();
+            return (from test in available_tests select (test.ID + "." + test.name+"\n")).ToString();
+        }
+
+        public TestTemplate GetTest(int ID)
+        {
+            var selected = from test in available_tests where test.ID == ID select test;
+            return selected.First();
         }
     }
 }
