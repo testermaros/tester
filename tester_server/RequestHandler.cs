@@ -11,12 +11,10 @@ namespace tester_server
 {
     class RequestHandler
     {
-        private ClientManager client_manager;
         private LoginManager login_manager;
         private string key;
-        public RequestHandler(ClientManager m)
+        public RequestHandler()
         {
-            this.client_manager = m;
             this.login_manager = new LoginManager();
         }
         /// <summary>
@@ -27,16 +25,30 @@ namespace tester_server
         public Response ProcessRequest(string message, string key)
         {
             Request parsed_request = Request.ConvertToRequest(message);
+            Response resp = null;
+
             //neplatna ziadost
             if (parsed_request == null) return null;
-            Response resp = null;
+
             switch (parsed_request.type) {
                 case SERVICE_TYPE.DISCONNECT:
-                    client_manager.RemoveClient(key);
+                    resp = new Response(SERVICE_TYPE.DISCONNECT, "", RESULT_CODE.SUCCESS);
+                    //odhlasenie
                     login_manager.LogOut(parsed_request.user.user_name);
                     break;
+
                 case SERVICE_TYPE.EVAL:
+                    //ak je uzivatel validny
+                    if (CheckAuthentification(parsed_request.user))
+                    {
+                        //dummy vyhodnotenie
+                    }
+                    else
+                    {
+
+                    }
                     break;
+
                 case SERVICE_TYPE.GET:
                     int id = 0;
                     //dummy vratenie id
@@ -58,25 +70,48 @@ namespace tester_server
                     }
                   
                     break;
+
                 case SERVICE_TYPE.LOGIN:
+                    //spracovanie prijatych udajov
+                    Account user = parsed_request.user;
+                    RESULT_CODE code;
+                    
+                    //prihlasenie bolo uspesne
+                    if (login_manager.LogIn(user.user_name, user.password_hash))
+                    {
+                        //namapuj
+                        login_manager.MapUser(key, user.user_name);
+                        //nastav vysledok
+                        code = RESULT_CODE.SUCCESS;
+                    }
+                    else
+                    {
+                        code = RESULT_CODE.PERM_DENIED;
+                    }
+                    resp = new Response(SERVICE_TYPE.LOGIN, "", code);
                     break;
+
                 case SERVICE_TYPE.TESTS_LIST:
                     //autentifikacia nepresla
                     if (!CheckAuthentification(parsed_request.user))
                     {
                         resp = new Response(SERVICE_TYPE.TESTS_LIST, "", RESULT_CODE.PERM_DENIED);
                     }
-                    string tests_list = TestManager.Instance().GetTestsNames();
-                    resp = new Response(SERVICE_TYPE.TESTS_LIST, tests_list, RESULT_CODE.SUCCESS);
-                    break;
-                case SERVICE_TYPE.KEEP:
-                    client_manager.UpdateLastCommunicationTime(key);
+                    else
+                    {
+                        string tests_list = TestManager.Instance().GetTestsNames();
+                        resp = new Response(SERVICE_TYPE.TESTS_LIST, tests_list, RESULT_CODE.SUCCESS);
+                    }
                     break;
                 default:
-                    client_manager.UpdateLastCommunicationTime(key);
-                    break; // poziadavka nie je validna
+                    break; 
             }
             return resp;
+        }
+
+        public void RemoveMappedUser(string ip)
+        {
+            login_manager.RemoveMapedUser(ip);
         }
 
         private bool CheckAuthentification(Account tested)

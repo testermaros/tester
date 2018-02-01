@@ -46,6 +46,7 @@
     <Compile Include="Connection\Authentification\LoginManager.cs" />
     <Compile Include="Connection\ClientManager.cs" />
     <Compile Include="Connection\EstablishmentManager.cs" />
+    <Compile Include="Connection\Message.cs" />
     <Compile Include="Connection\Request.cs" />
     <Compile Include="Connection\Response.cs" />
     <Compile Include="Program.cs" />

@@ -37,7 +37,7 @@ namespace tester_server.Connection
             connected_users = new ConcurrentDictionary<string, Socket>();
             last_communication = new ConcurrentDictionary<string, long>();
             buffers = new ConcurrentDictionary<string, string>();
-            handler = new RequestHandler(this);
+            handler = new RequestHandler();
         }
 
         public void AddClient(string ip, Socket client_socket)
@@ -56,6 +56,8 @@ namespace tester_server.Connection
             last_communication.TryRemove(ip,out temp);
             string temp_b;
             buffers.TryRemove(ip, out temp_b);
+            //odstanenie z namapovania
+            handler.RemoveMappedUser(ip);
         }
         /// <summary>
         /// Ukoncenie vlakien servera
@@ -121,8 +123,29 @@ namespace tester_server.Connection
             // nastavenie flagu na prijimanie spravy
             SetCommunicationTime(key, 0);
             string recieved_string = Recieve(value);
-            //spracovanie poziadavky
-            string response = ProccessMessage(recieved_string, key);
+            Message recieved_message_obj = Message.Parse(recieved_string);
+            string response = null;
+
+            //ak sprava nie je validna
+            if (recieved_message_obj == null)
+                return;
+            
+            //ak je to sprava udrzania spojenia obnov poslednu komunikaciu
+            if (recieved_message_obj.mess_type == MESSAGE_TYPE.KEEP)
+            {
+                Console.WriteLine("update keep alive :{}", key);
+                UpdateLastCommunicationTime(key);
+            }
+            // ak je poziadavka na server
+            else if (recieved_message_obj.mess_type == MESSAGE_TYPE.REQUEST)
+            {
+                //spracovanie poziadavky
+                response = ProccessRequest(recieved_message_obj.data, key);
+            }
+            //nie je validna poziadavka
+            else
+                return;
+            
             //zahod poziadavku a ukonci obsluhu
             if (response == null)
                 return;
@@ -229,11 +252,17 @@ namespace tester_server.Connection
         /// </summary>
         /// <param name="message"></param>
         /// <returns>Vysledok spracovania</returns>
-        private string ProccessMessage(string message, string key)
+        private string ProccessRequest(string message, string key)
         {
             Response resp = handler.ProcessRequest(message, key);
             if (resp == null)
                 return null;
+            //odstran spojenie
+            if (resp.type == SERVICE_TYPE.DISCONNECT)
+            {
+                RemoveClient(key);
+                return null;
+            }
             return resp.ConvertToString();
         }
 
@@ -247,7 +276,7 @@ namespace tester_server.Connection
             return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
-        public void UpdateLastCommunicationTime(string key)
+        private void UpdateLastCommunicationTime(string key)
         {
             SetCommunicationTime(key, CurrentMilliseconds());
         }

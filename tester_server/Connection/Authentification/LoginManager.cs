@@ -47,6 +47,7 @@ namespace tester_server.Connection.Authentification
             //ak sa nenachadza uzivatel s danym menom pridaj ho
             if (result.Count() == 0)
             {
+                Console.WriteLine("Ucet {0} bol pridany", username);
                 accounts.Add(new Account() { Is_LogedOn = false, password_hash = password.GetHashCode(), user_name = username });
                 return true;
             }
@@ -57,14 +58,16 @@ namespace tester_server.Connection.Authentification
         public void MapUser(string ip, string username)
         {
             ip_map.Add(ip, username);
+            Console.WriteLine("Uzivatel {0} bol namapovany", username);
         }
 
-        public void RemoveMapUser(string ip)
+        public void RemoveMapedUser(string ip)
         {
             string username;
             if (ip_map.TryGetValue(ip, out username)) {
                 ip_map.Remove(ip);
                 LogOut(username);
+                Console.WriteLine("Uzivatel {0} bol odmapvany", username);
             }
         }
 
@@ -91,12 +94,19 @@ namespace tester_server.Connection.Authentification
             return temp.Is_LogedOn;
         }
 
-        public bool LogIn(string username)
+        public bool LogIn(string username, int hash_pass)
         {
             if (!IsLoggedIn(username))
             {
-                AccountByUsername(username).Is_LogedOn = true;
-                return true;
+                Account temp = AccountByUsername(username);
+                if (temp == null)
+                    return false;
+                if (temp.password_hash == hash_pass)
+                {
+                    temp.Is_LogedOn = true;
+                    Console.WriteLine("Uzivatel {0} bol prihlaseny", username);
+                    return true;
+                }
             }
             return false;
         }
@@ -106,6 +116,7 @@ namespace tester_server.Connection.Authentification
             Account user = AccountByUsername(username);
             if (user == null) return;
             user.Is_LogedOn = false;
+            Console.WriteLine("Uzivatel {0} bol odhlaseny", username);
         }
 
         //serializacia udajov

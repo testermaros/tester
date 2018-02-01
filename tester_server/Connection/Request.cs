@@ -11,11 +11,10 @@ namespace tester_server.Connection
     /// DISCONNECT - Odpojenie hosta
     /// LOGIN - prihlasenie sa pod uctom
     /// EVAL - vyhodnotenie testu
-    /// KEEP - potvrdenie spojenia, odosielane periodicky
     /// </summary>
     public enum SERVICE_TYPE
     {
-        TESTS_LIST, GET, DISCONNECT, LOGIN, EVAL, KEEP
+        TESTS_LIST, GET, DISCONNECT, LOGIN, EVAL
     }
 
     public class Request
