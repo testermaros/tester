@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace tester_server.Connection
+namespace testerC.Connection
 {
-    public enum RESULT_CODE {
-        BAD_REQUEST, PERM_DENIED,SUCCESS,UNAVAILABLE
+    public enum RESULT_CODE
+    {
+        BAD_REQUEST, PERM_DENIED, SUCCESS, UNAVAILABLE
     }
     public class Response
     {
@@ -41,7 +42,7 @@ namespace tester_server.Connection
             SERVICE_TYPE t = (SERVICE_TYPE)Enum.Parse(typeof(SERVICE_TYPE), tree.Attribute("type").Value);
             RESULT_CODE r = (RESULT_CODE)Enum.Parse(typeof(RESULT_CODE), tree.Attribute("code").Value);
             string data = tree.Value;
-            return new Response(t, data,r);
+            return new Response(t, data, r);
         }
     }
 }

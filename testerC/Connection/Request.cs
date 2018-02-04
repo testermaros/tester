@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Linq;
-using tester_server.Connection.Authentification;
+using testerC.Authentification;
 
-namespace tester_server.Connection
+namespace testerC.Connection
 {
     /// <summary>
     /// Enumerator moznych typov requestov
@@ -65,8 +69,7 @@ namespace tester_server.Connection
                 string data = tree.Element("data").Value;
                 return new Request(t, data, user);
             }
-            catch (Exception)
-            {
+            catch (Exception) {
                 return null;
             }
         }

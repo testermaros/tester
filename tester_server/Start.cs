@@ -41,15 +41,24 @@ namespace tester_server
         /// Vytvorenie servera na zadanom porte
         /// </summary>
         /// <param name="allowed_host"> Maximalny pocet uzivatelov</param>
-        public void Create_Server(int allowed_host)
+        public bool Create_Server(int allowed_host)
         {
-            //ziskanie udajov
-            IPAddress ipAddress = GetLocalIPAddress();
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, TCP_PORT);
-            //vytvorenie servera
-            listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            listener.Bind(localEndPoint);
-            listener.Listen(allowed_host);
+            try
+            {
+                //ziskanie udajov
+                IPAddress ipAddress = GetLocalIPAddress();
+                IPEndPoint localEndPoint = new IPEndPoint(ipAddress, TCP_PORT);
+                //vytvorenie servera
+                listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                listener.Bind(localEndPoint);
+                listener.Listen(allowed_host);
+                return true;
+            }
+            catch (SocketException)
+            {
+                Console.Error.WriteLine("Port sa uz pouziva");
+                return false;
+            }
         }
 
         public void Start_server()

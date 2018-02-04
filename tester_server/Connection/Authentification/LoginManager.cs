@@ -38,7 +38,7 @@ namespace tester_server.Connection.Authentification
         private Account AccountByUsername(string username)
         {
             var result = from user in accounts where user.user_name == username select user;
-            return result.First();
+            return (result.Count() == 0) ? null : result.First();
         }
 
         public bool AddUser(string username, string password)
@@ -135,7 +135,7 @@ namespace tester_server.Connection.Authentification
                 using (Stream str = File.Open(file_name, FileMode.Open))
                     return (LoginManager)ser.Deserialize(str);
             }
-            catch (FileNotFoundException)
+            catch (Exception)
             {
                 return null;
             }

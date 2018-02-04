@@ -123,6 +123,8 @@ namespace tester_server.Connection
             // nastavenie flagu na prijimanie spravy
             SetCommunicationTime(key, 0);
             string recieved_string = Recieve(value);
+            //debug
+            Console.WriteLine( recieved_string);
             Message recieved_message_obj = Message.Parse(recieved_string);
             string response = null;
 
@@ -195,7 +197,7 @@ namespace tester_server.Connection
             StringBuilder builder = new StringBuilder(saved_part);
             string temp_message;
             int new_message_index = 0;
-            long last_recieved_time = 0;
+            long last_recieved_time = CurrentMilliseconds();
             byte[] buffer = new byte[MAX_SIZE];
             while (true) {
                 while (client.Available > 0)
@@ -209,7 +211,7 @@ namespace tester_server.Connection
                         //vrat zvysok po konci spravy na zaciatok buffera
                         string next_part = temp_message.Substring(new_message_index + EOM.Length);
                         //uloz zvysok
-                        buffers.TryUpdate(ip, saved_part, next_part);
+                        buffers.TryUpdate(ip, next_part, saved_part);
                         //return poslednu prijatu spravu
                         return temp_message.Substring(0, new_message_index);
                     }
@@ -263,7 +265,9 @@ namespace tester_server.Connection
                 RemoveClient(key);
                 return null;
             }
-            return resp.ConvertToString();
+            // zabalenie do message
+            Message m = new Message(MESSAGE_TYPE.REQUEST, resp.ToString());
+            return m.ToString();
         }
 
         private void SendResponse(string response, Socket client)
@@ -284,7 +288,7 @@ namespace tester_server.Connection
         private void SetCommunicationTime(string key, long time_milis) {
             long value;
             last_communication.TryGetValue(key, out value);
-            last_communication.TryUpdate(key, value, time_milis);
+            last_communication.TryUpdate(key, time_milis, value);
         }
 
         private void StartTimeoutTimer()

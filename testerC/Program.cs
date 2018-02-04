@@ -6,13 +6,35 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using testerC.Connection;
 
 namespace testerC
 {
     class Program
     {
     
-        public static int Main()
+        public static void Main()
+        {
+            string ip = "192.168.1.153";
+            int port = 8619;
+            Connection.ConnectionMannager manager = new Connection.ConnectionMannager();
+            if (manager.Connect(ip, port))
+                Console.WriteLine("Pripojene");
+            string input = "";
+
+            while (!input.Equals("end")) {
+                input = Console.ReadLine();
+                if (input.Equals("list"))
+                {
+                    Message m = new RequestHelper().Wrap(Connection.MESSAGE_TYPE.REQUEST, Connection.SERVICE_TYPE.TESTS_LIST, "");
+                    input = m.ToString();
+                }
+                manager.Send(input);
+                string recieved = manager.Recieve();
+                Console.WriteLine("Recieved: "+ recieved);
+            }
+        }
+        /*public static int Main()
         {
             int GroupPort = 6974;
             UdpClient udp = new UdpClient();
@@ -29,6 +51,6 @@ namespace testerC
             Console.ReadLine();
 
             return 0;
-        }
+        }*/
     }
 }

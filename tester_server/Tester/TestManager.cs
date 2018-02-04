@@ -46,5 +46,12 @@ namespace tester_server.Tester
             var selected = from test in available_tests where test.ID == ID select test;
             return selected.First();
         }
+
+        public double Evaluate(ResultForm form)
+        {
+            //dummy
+            return 0.0;
+
+        }
     }
 }

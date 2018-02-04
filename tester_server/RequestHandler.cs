@@ -12,7 +12,7 @@ namespace tester_server
     class RequestHandler
     {
         private LoginManager login_manager;
-        private string key;
+
         public RequestHandler()
         {
             this.login_manager = new LoginManager();
@@ -41,11 +41,13 @@ namespace tester_server
                     //ak je uzivatel validny
                     if (CheckAuthentification(parsed_request.user))
                     {
+                        ResultForm form = ResultForm.Convert(parsed_request.data);
+
                         //dummy vyhodnotenie
                     }
                     else
                     {
-
+                        resp = new Response(SERVICE_TYPE.EVAL, "", RESULT_CODE.PERM_DENIED);
                     }
                     break;
 
@@ -95,6 +97,7 @@ namespace tester_server
                     //autentifikacia nepresla
                     if (!CheckAuthentification(parsed_request.user))
                     {
+                        Console.WriteLine("Neautorizovane");
                         resp = new Response(SERVICE_TYPE.TESTS_LIST, "", RESULT_CODE.PERM_DENIED);
                     }
                     else
