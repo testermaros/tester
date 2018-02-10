@@ -1,0 +1,18 @@
+﻿<Window x:Class="Tester_server_GUI.UI.AddUserWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tester_server_GUI.UI"
+        mc:Ignorable="d"
+        Title="AddUserWindow" Height="250" Width="300">
+    <Grid>
+        <Label Content="User name" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,50,0,0" VerticalAlignment="Top" Width="100"/>
+        <Label Content="Password" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,90,0,0" VerticalAlignment="Top" Width="100"/>
+        <Label Content="Retype password" HorizontalContentAlignment="Right" HorizontalAlignment="Left" Margin="10,130,0,0" VerticalAlignment="Top" Width="100"/>
+        <PasswordBox Name="retypePassword" HorizontalAlignment="Left" Height="26" Margin="120,130,0,0" VerticalAlignment="Top" Width="120"/>
+        <PasswordBox Name="password" HorizontalAlignment="Left" Height="26" Margin="120,90,0,0" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="user_name"  HorizontalAlignment="Left" Height="26" Margin="120,50,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Add user" HorizontalAlignment="Left" Margin="120,170,0,0" VerticalAlignment="Top" Width="120" Height="25" Click="AddUserAction"/>
+    </Grid>
+</Window>

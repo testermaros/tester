@@ -13,7 +13,7 @@ namespace tester_server
         private Socket listener;
         private string state;
         private bool running_flag;
-        private const int TCP_PORT = 8619;
+        public const int TCP_PORT = 8619;
 
         // spracovanie dat po akceptovani pripojenia
         private ClientManager mannager;
