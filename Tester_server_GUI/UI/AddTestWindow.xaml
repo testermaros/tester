@@ -5,8 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Tester_server_GUI.UI"
         mc:Ignorable="d"
-        Title="AddWindow" Height="300" Width="300">
+        Title="AddWindow" Height="400" Width="400">
     <Grid>
-        
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Nazov testu: "/>
+                <TextBox Name="test_name" Text="" Margin="30,0,0,0" Width="200"/>
+            </StackPanel>
+            <Label Content="Otazky (zaskrtnuta odpoved je spravna)"/>
+        </StackPanel>
+        <ListBox Name="questionList" Margin="0,50,0,30">
+        </ListBox>
+        <Button Content="Add question" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="100" Height="30" Click="AddQuestionAction"/>
+        <Button Content="Remove question" HorizontalAlignment="Left" Margin="100,0,0,0" VerticalAlignment="Bottom" Width="100" Height="30" Click="RemoveQuestionAction"/>
+        <Button Content="Save test" HorizontalAlignment="left" Margin="200,0,0,0" VerticalAlignment="Bottom" Width="100" Height="30" Click="SaveTestAction" />
     </Grid>
 </Window>

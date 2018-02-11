@@ -54,6 +54,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="UI\AddQuestionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\AddTestWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -87,6 +91,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\Dataset.cs" />
+    <Compile Include="UI\AddQuestionWindow.xaml.cs">
+      <DependentUpon>AddQuestionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\AddTestWindow.xaml.cs">
       <DependentUpon>AddTestWindow.xaml</DependentUpon>
     </Compile>

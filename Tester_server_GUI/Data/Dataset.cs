@@ -17,6 +17,7 @@ namespace Tester_server_GUI.Data
         public Start start;
         public LoginManager login_manager;
         public TestManager test_manager;
+        public int TestID { get { return TestID++; } private set { TestID = value; } }
         //end
 
         private static Dataset db;
@@ -39,7 +40,8 @@ namespace Tester_server_GUI.Data
             admin = new Account { Is_LogedOn = false, password_hash = "password".GetHashCode(), user_name = "admin" };
             start = new Start();
             login_manager = new LoginManager();
-            test_manager = new TestManager();
+            test_manager = new TestManager()
+            TestID = 0;
         }
 
         ~Dataset()

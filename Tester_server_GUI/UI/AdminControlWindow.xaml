@@ -21,10 +21,14 @@
             </TabItem>
             <TabItem Header="Tests">
                 <Grid Background="#FFE5E5E5">
-                    <ListBox Name="testList" Margin="0,0,0,30" MouseRightButtonUp="testList_SelectionChanged"/>
-                    <Button Content="Add test" HorizontalAlignment="Left" Width="100" VerticalAlignment="Bottom" Height="30" Click="AddTestAction" />
-                    <Button Content="Edit test" HorizontalAlignment="Center" Width="100" VerticalAlignment="Bottom" Height="30" Click="EditTestAction"/>
-                    <Button Content="Remove test" HorizontalAlignment="Right" Width="100" VerticalAlignment="Bottom" Height="30" Click="RemoveTestAction" />
+                    <ListBox Name="testList" Margin="0,0,0,30" MouseRightButtonUp="testList_SelectionChanged">
+                    </ListBox>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <Button Content="Add test"  Width="100" VerticalAlignment="Bottom" Height="30" Click="AddTestAction" Margin="0,0,20,0"/>
+                        <Button Content="Edit test" Width="100" VerticalAlignment="Bottom" Height="30" Click="EditTestAction" Margin="0,0,20,0"/>
+                        <Button Content="Remove test"  Width="100" VerticalAlignment="Bottom" Height="30" Click="RemoveTestAction" Margin="0,0,20,0"/>
+                        <Button Content="Details" Width="100" VerticalAlignment="Bottom" Height="30" Click="DetailsTestAction" HorizontalAlignment="Right" Margin="0,0,20,0"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>

@@ -85,5 +85,14 @@ namespace Tester_server_GUI.UI
             win.ShowDialog();
             UpdateTestData();
         }
+
+        private void DetailsTestAction(object sender, RoutedEventArgs e)
+        {
+            TestTemplate test = (TestTemplate)testList.SelectedItem;
+            if (test == null) return;
+            DetailsWindow win = new DetailsWindow(test);
+            win.ShowDialog();
+            UpdateTestData();
+        }
     }
 }
